@@ -15,8 +15,10 @@ APP_NAME = "Kariyer Kapısı Takip"
 VERSION = "3.0"
 
 # Tüm veriler betiğin yanındaki klasörde tutulur (çalışma klasöründen bağımsız).
-BASE_DIR = PatBASE_DIR = Path(os.getenv("DATA_DIR", str(Path(__file__).resolve().parent)))
-BASE_DIR.mkdir(parents=True, exist_ok=True)h(__file__).resolve().parent
+# Bulutta DATA_DIR ortam değişkeniyle /tmp gibi bir yola yönlendirilir.
+BASE_DIR = Path(os.getenv("DATA_DIR", str(Path(__file__).resolve().parent)))
+BASE_DIR.mkdir(parents=True, exist_ok=True)
+
 DB_PATH = BASE_DIR / "kariyer_kapisi_v2.db"      # v2 şemasıyla uyumlu: eski veriniz korunur
 CONFIG_PATH = BASE_DIR / "config.json"
 LEGACY_RSS_PATH = BASE_DIR / "rss_url.txt"        # eski sürümden otomatik içe aktarılır
