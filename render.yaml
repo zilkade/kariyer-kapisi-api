@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: kariyer-kapisi-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: TARAMA_ARALIK_DK
+        value: "30"
+      - key: DATA_DIR
+        value: "/tmp/kariyer-data"

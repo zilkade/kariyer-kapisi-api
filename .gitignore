@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.db
+config.json
+ilan_resimleri/
+takip.log
+.env
+.DS_Store
