@@ -177,7 +177,8 @@ def _like(s: str) -> str:
 
 
 def ilanlari_getir(f: Filtre) -> list[sqlite3.Row]:
-    sql = ["SELECT id, kurum, baslik, tarih_iso, bit_iso, kpss, yeni, aktif, kategori, favori "
+    sql = ["SELECT id, kurum, baslik, tarih_iso, bit_iso, kpss, kpss_turleri, "
+           "yeni, aktif, kategori, favori, link, resim, not_metni "
            "FROM ilan WHERE 1=1"]
     p: list = []
     for kelime in fold(f.metin).split():
