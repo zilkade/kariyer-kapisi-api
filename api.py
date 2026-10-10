@@ -42,7 +42,7 @@ log = logging.getLogger("api")
 # =====================================================================
 # YAPILANDIRMA
 # =====================================================================
-TARAMA_ARALIK_DK = int(os.getenv("TARAMA_ARALIK_DK", str(config.ONYUKLE_MAX and 30)))
+TARAMA_ARALIK_DK = int(os.getenv("TARAMA_ARALIK_DK", "30"))
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 API_KEY = os.getenv("API_KEY", "").strip()   # boşsa auth devre dışı
 
@@ -120,8 +120,11 @@ def _arka_plan_tara():
         else:
             log.info("Tarama tamam — %d ilan, %d yeni", s.toplam, len(s.yeni))
             # KPSS bilgisi önyükleme (opsiyonel)
-            service.detay_onyukle(config.ONYUKLE_MAX, config.ONYUKLE_BEKLEME,
-                                  threading.Event())
+            try:
+                service.detay_onyukle(config.ONYUKLE_MAX, config.ONYUKLE_BEKLEME,
+                                      threading.Event())
+            except Exception:
+                log.exception("Detay önyükleme başarısız")
     except Exception:
         log.exception("Periyodik tarama başarısız")
     finally:
@@ -131,14 +134,15 @@ def _arka_plan_tara():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _scheduler
-    # Uygulama açılışında DB tablolarını hazırla
+
+    # ---- 1) Veritabanı şemasını hazırla (tablolar + indeksler)
     try:
-        db.baslat()          # db.py'de böyle bir fonksiyon varsa çağrılır
-    except AttributeError:
-        pass                 # yoksa sorun değil
+        db.init_db()
+        log.info("Veritabanı şeması hazır: %s", config.DB_PATH)
     except Exception:
         log.exception("DB başlatma hatası")
 
+    # ---- 2) Zamanlayıcıyı başlat
     _scheduler = BackgroundScheduler(timezone="Europe/Istanbul")
     _scheduler.add_job(_arka_plan_tara, "interval",
                        minutes=TARAMA_ARALIK_DK,
@@ -147,7 +151,7 @@ async def lifespan(app: FastAPI):
     _scheduler.start()
     log.info("Zamanlayıcı başladı — her %d dk taranacak", TARAMA_ARALIK_DK)
 
-    # İlk taramayı hemen tetikle (arka planda)
+    # ---- 3) İlk taramayı hemen tetikle (arka planda)
     threading.Thread(target=_arka_plan_tara, daemon=True).start()
 
     yield
