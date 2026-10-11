@@ -35,7 +35,7 @@ API_HEADERS = {
 }
 RSS_VARSAYILAN = "https://kariyerkapisi.gov.tr/RSS"
 
-HTTP_TIMEOUT = 25            # sn
+HTTP_TIMEOUT = 60            # sn
 RESIM_MAX_BAYT = 10 * 1024 * 1024
 CACHE_SAAT = 12              # detay önbellek süresi
 ONYUKLE_BEKLEME = 1.5        # arka plan detay çekimleri arası bekleme (sn)
